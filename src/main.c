@@ -4,14 +4,17 @@
  */
 
 #include "base.h"
+#include "pd.h"
 
 static void print_help(const char *programName)
 {
     printf("Uso:\n");
-    printf("  %s -g <cantidad>   Genera deportistas aleatorios en db/deportistas.csv\n", programName);
-    printf("  %s -i <id>         Busca un deportista por ID usando busqueda binaria\n", programName);
-    printf("  %s -r <cantidad>   Muestra ranking ordenado por puntaje usando Quick Sort\n", programName);
-    printf("  %s -h              Muestra esta ayuda\n", programName);
+    printf("  %s -g <cantidad>      Genera deportistas aleatorios en db/deportistas.csv\n", programName);
+    printf("  %s -i <id>            Busca un deportista por ID usando busqueda binaria\n", programName);
+    printf("  %s -r <cantidad>      Muestra ranking ordenado por puntaje usando Quick Sort\n", programName);
+    printf("  %s -t <presupuesto>   Ejecuta seleccion por programacion dinamica con tabulacion\n", programName);
+    printf("  %s -m <presupuesto>   Ejecuta seleccion por programacion dinamica con memoizacion\n", programName);
+    printf("  %s -h                 Muestra esta ayuda\n", programName);
 }
 
 static void search_by_id(int targetId)
@@ -57,6 +60,42 @@ static void show_ranking(int rankingAmount)
     free_deportistas_array(deportistas, count);
 }
 
+static void select_team_pd_tabulation(int presupuesto)
+{
+    int count = 0;
+    Deportista *deportistas = load_deportistas_array(&count);
+
+    if (deportistas == NULL || count == 0) {
+        print_error(ERROR_NO_DATA_LOADED, CSV_ROUTE);
+        return;
+    }
+
+    ResultadoPD resultado = seleccionar_equipo_pd_tabulation(deportistas, count, presupuesto);
+
+    print_resultado_pd(resultado);
+
+    free_resultado_pd(resultado);
+    free_deportistas_array(deportistas, count);
+}
+
+static void select_team_pd_memoization(int presupuesto)
+{
+    int count = 0;
+    Deportista *deportistas = load_deportistas_array(&count);
+
+    if (deportistas == NULL || count == 0) {
+        print_error(ERROR_NO_DATA_LOADED, CSV_ROUTE);
+        return;
+    }
+
+    ResultadoPD resultado = seleccionar_equipo_pd_memoization(deportistas, count, presupuesto);
+
+    print_resultado_pd(resultado);
+
+    free_resultado_pd(resultado);
+    free_deportistas_array(deportistas, count);
+}
+
 int main(int argc, char **argv)
 {
     int opt;
@@ -68,7 +107,7 @@ int main(int argc, char **argv)
         return EXIT_SUCCESS;
     }
 
-    while((opt = getopt(argc, argv, "hg:i:r:")) != -1) {
+    while((opt = getopt(argc, argv, "hg:i:r:t:m:")) != -1) {
         switch(opt) {
             case 'h':
                 print_help(argv[0]);
@@ -105,6 +144,32 @@ int main(int argc, char **argv)
                 }
 
                 show_ranking(rankingAmount);
+                break;
+            }
+
+            case 't':
+            {
+                int presupuesto = atoi(optarg);
+
+                if (presupuesto <= 0) {
+                    print_error(ERROR_INVALID_DATA_AMOUNT, "El presupuesto debe ser mayor a 0");
+                    return EXIT_FAILURE;
+                }
+
+                select_team_pd_tabulation(presupuesto);
+                break;
+            }
+
+            case 'm':
+            {
+                int presupuesto = atoi(optarg);
+
+                if (presupuesto <= 0) {
+                    print_error(ERROR_INVALID_DATA_AMOUNT, "El presupuesto debe ser mayor a 0");
+                    return EXIT_FAILURE;
+                }
+
+                select_team_pd_memoization(presupuesto);
                 break;
             }
 
