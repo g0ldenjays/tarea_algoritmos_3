@@ -89,6 +89,16 @@ int generate_random_competitions(void)
 }
 
 /**
+ * @brief Genera una cantidad aleatoria de costo para un deportista.
+ *
+ * @return int Costo de deportistas.
+ */
+int generate_random_cost(void)
+{
+    return (rand() % (MAX_COSTS - MIN_COSTS + 1) + MIN_COSTS);
+}
+
+/**
  * @brief Mezcla un arreglo de enteros usando Fisher-Yates.
  *
  * @param values Arreglo a mezclar.

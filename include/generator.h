@@ -37,6 +37,13 @@ float generate_random_score(void);
 int generate_random_competitions(void);
 
 /**
+ * @brief Genera una cantidad aleatoria de costo para un deportista.
+ *
+ * @return int Cantidad generada en el rango [MIN_COSTS, MAX_COSTS].
+ */
+int generate_random_cost(void);
+
+/**
  * @brief Aplica el algoritmo Fisher-Yates sobre un arreglo de enteros.
  *
  * @param values Arreglo a mezclar.

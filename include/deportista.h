@@ -18,6 +18,7 @@ typedef struct DeportistaData {
     char *equipo;       /**< Equipo (cadena dinamica, propiedad del deportista). */
     float puntaje;      /**< Puntaje acumulado del deportista. */
     int competencias;   /**< Cantidad de competencias disputadas. */
+    int costo;          /**< Costo del deportista. */
 } DeportistaData;
 
 /**
@@ -36,6 +37,7 @@ typedef DeportistaData *Deportista;
  * @param equipo Equipo al que pertenece.
  * @param puntaje Puntaje acumulado.
  * @param competencias Cantidad de competencias disputadas.
+ * @param costo Costo del deportista.
  * @return Deportista Nuevo deportista creado o NULL si falla la reserva.
  */
 Deportista create_deportista(
@@ -43,7 +45,8 @@ Deportista create_deportista(
     char *nombre,
     char *equipo,
     float puntaje,
-    int competencias
+    int competencias,
+    int costo
 );
 
 /**

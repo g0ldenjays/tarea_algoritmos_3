@@ -13,9 +13,10 @@
  * @param equipo Equipo del deportista.
  * @param puntaje Puntaje del deportista.
  * @param competencias Cantidad de competencias.
+ * @param costo Costo del deportista.
  * @return Deportista Instancia creada o NULL si falla la reserva.
  */
-Deportista create_deportista(int id, char *nombre, char *equipo, float puntaje, int competencias)
+Deportista create_deportista(int id, char *nombre, char *equipo, float puntaje, int competencias, int costo)
 {
     Deportista newDeportista = malloc(sizeof(DeportistaData));
 
@@ -28,6 +29,7 @@ Deportista create_deportista(int id, char *nombre, char *equipo, float puntaje, 
     newDeportista->equipo = equipo;
     newDeportista->puntaje = puntaje;
     newDeportista->competencias = competencias;
+    newDeportista->costo = costo;
 
     return newDeportista;
 }
@@ -59,12 +61,13 @@ void print_deportista(Deportista deportista)
         return;
     }
 
-    printf("ID: %d | Nombre: %s | Equipo: %s | Puntaje: %.2f | Competencias: %d\n",
+    printf("ID: %d | Nombre: %s | Equipo: %s | Puntaje: %.2f | Competencias: %d | Costo: %d\n",
         deportista->id,
         deportista->nombre,
         deportista->equipo,
         deportista->puntaje,
-        deportista->competencias);
+        deportista->competencias,
+        deportista->costo);
 }
 
 /**

@@ -27,6 +27,8 @@
 #define MIN_SCORE 0.0
 #define MAX_COMPETITIONS 45
 #define MIN_COMPETITIONS 1
+#define MIN_COSTS 10
+#define MAX_COSTS 100
 #define CSV_ROUTE "./db/deportistas.csv"
 
 #endif

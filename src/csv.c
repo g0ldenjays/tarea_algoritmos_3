@@ -74,6 +74,7 @@ void create_deportistas_csv(int dataAmount)
         char *equipo = generate_random_team();
         float puntaje = generate_random_score();
         int competencias = generate_random_competitions();
+        int costo = generate_random_cost();
 
         if(nombre == NULL || equipo == NULL) {
             free(nombre);
@@ -89,7 +90,7 @@ void create_deportistas_csv(int dataAmount)
             return;
         }
 
-        deportistas[i] = create_deportista(i + 1, nombre, equipo, puntaje, competencias);
+        deportistas[i] = create_deportista(i + 1, nombre, equipo, puntaje, competencias, costo);
         if(deportistas[i] == NULL) {
             free(nombre);
             free(equipo);
@@ -107,17 +108,18 @@ void create_deportistas_csv(int dataAmount)
 
     shuffle_deportistas_array(deportistas, dataAmount);
 
-    fprintf(file, "ID,Nombre,Equipo,Puntaje,Competencias\n");
+    fprintf(file, "ID,Nombre,Equipo,Puntaje,Competencias,Costo\n");
 
     for(i = 0; i < dataAmount; i++) {
         fprintf(
             file,
-            "%d,%s,%s,%.2f,%d\n",
+            "%d,%s,%s,%.2f,%d,%d\n",
             deportistas[i]->id,
             deportistas[i]->nombre,
             deportistas[i]->equipo,
             deportistas[i]->puntaje,
-            deportistas[i]->competencias
+            deportistas[i]->competencias,
+            deportistas[i]->costo
         );
     }
 
@@ -211,7 +213,17 @@ Deportista *load_deportistas_array(int *count)
         }
 
         int competencias = atoi(token);
-        Deportista deportista = create_deportista(id, nombre, equipo, puntaje, competencias);
+
+        token = strtok(NULL, ",\n\r");
+        if(token == NULL) {
+            free(nombre);
+            free(equipo);
+            continue;
+        }
+
+        int costo = atoi(token);
+
+        Deportista deportista = create_deportista(id, nombre, equipo, puntaje, competencias, costo);
 
         if(deportista == NULL) {
             free(nombre);
