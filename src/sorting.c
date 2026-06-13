@@ -197,6 +197,51 @@ int compare_by_criteria(Deportista left, Deportista right, SortCriteria criteria
 
         case SORT_BY_EQUIPO:
             return strcmp(left->equipo, right->equipo);
+        
+        case SORT_BY_COSTO:
+            if(left->costo < right->costo) {
+                return -1;
+            }
+
+            if(left->costo > right->costo) {
+                return 1;
+            }
+
+            return 0;
+
+        case SORT_BY_RATIO:
+            float leftRatio;
+            float rightRatio;
+
+            if(left->costo == 0)
+            {
+                leftRatio = left->puntaje;
+            }
+            else
+            {
+                leftRatio = left->puntaje / left->costo;
+            }
+
+            if(right->costo == 0)
+            {
+                rightRatio = right->puntaje;
+            }
+            else
+            {
+                rightRatio = right->puntaje / right->costo;
+            }
+
+            if(leftRatio < rightRatio)
+            {
+                return -1;
+            }
+
+            if(leftRatio > rightRatio)
+            {
+                return 1;
+            }
+
+            return 0;
 
         default:
             return 0;

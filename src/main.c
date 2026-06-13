@@ -5,6 +5,7 @@
 
 #include "base.h"
 #include "pd.h"
+#include "greedy.h"
 
 static void print_help(const char *programName)
 {
@@ -15,6 +16,9 @@ static void print_help(const char *programName)
     printf("  %s -t <presupuesto>   Ejecuta seleccion por programacion dinamica con tabulacion\n", programName);
     printf("  %s -m <presupuesto>   Ejecuta seleccion por programacion dinamica con memoizacion\n", programName);
     printf("  %s -h                 Muestra esta ayuda\n", programName);
+    printf("  %s -p <presupuesto>   Ejecuta seleccion greedy (mayor puntaje primero)\n", programName);
+    printf("  %s -c <presupuesto>   Ejecuta seleccion greedy (menor costo primero)\n", programName);
+    printf("  %s -z <presupuesto>   Ejecuta seleccion greedy (mejor razon puntaje/costo)\n", programName);
 }
 
 static void search_by_id(int targetId)
@@ -96,6 +100,90 @@ static void select_team_pd_memoization(int presupuesto)
     free_deportistas_array(deportistas, count);
 }
 
+static void select_team_greedy_puntaje(int presupuesto)
+{
+    int count = 0;
+    Deportista *deportistas = load_deportistas_array(&count);
+
+    if (deportistas == NULL || count == 0) {
+        print_error(ERROR_NO_DATA_LOADED, CSV_ROUTE);
+        return;
+    }
+
+    Deportista *seleccionados = malloc(sizeof(Deportista) * count);
+    int costo_total = 0;
+    float puntaje_total = 0.0f;
+
+    if (seleccionados == NULL) {
+        print_error(ERROR_MEMORY_ALLOCATION_FAILED, NULL);
+        free_deportistas_array(deportistas, count);
+        return;
+    }
+
+    int n = greedy_por_puntaje(deportistas, count, presupuesto, seleccionados, &costo_total, &puntaje_total);
+
+    print_resultado_greedy(seleccionados, n, costo_total, puntaje_total, "mayor puntaje primero");
+
+    free(seleccionados);
+    free_deportistas_array(deportistas, count);
+}
+
+static void select_team_greedy_costo(int presupuesto)
+{
+    int count = 0;
+    Deportista *deportistas = load_deportistas_array(&count);
+
+    if (deportistas == NULL || count == 0) {
+        print_error(ERROR_NO_DATA_LOADED, CSV_ROUTE);
+        return;
+    }
+
+    Deportista *seleccionados = malloc(sizeof(Deportista) * count);
+    int costo_total = 0;
+    float puntaje_total = 0.0f;
+
+    if (seleccionados == NULL) {
+        print_error(ERROR_MEMORY_ALLOCATION_FAILED, NULL);
+        free_deportistas_array(deportistas, count);
+        return;
+    }
+
+    int n = greedy_por_costo(deportistas, count, presupuesto, seleccionados, &costo_total, &puntaje_total);
+
+    print_resultado_greedy(seleccionados, n, costo_total, puntaje_total, "menor costo primero");
+
+    free(seleccionados);
+    free_deportistas_array(deportistas, count);
+}
+
+static void select_team_greedy_razon(int presupuesto)
+{
+    int count = 0;
+    Deportista *deportistas = load_deportistas_array(&count);
+
+    if (deportistas == NULL || count == 0) {
+        print_error(ERROR_NO_DATA_LOADED, CSV_ROUTE);
+        return;
+    }
+
+    Deportista *seleccionados = malloc(sizeof(Deportista) * count);
+    int costo_total = 0;
+    float puntaje_total = 0.0f;
+
+    if (seleccionados == NULL) {
+        print_error(ERROR_MEMORY_ALLOCATION_FAILED, NULL);
+        free_deportistas_array(deportistas, count);
+        return;
+    }
+
+    int n = greedy_por_razon(deportistas, count, presupuesto, seleccionados, &costo_total, &puntaje_total);
+
+    print_resultado_greedy(seleccionados, n, costo_total, puntaje_total, "mejor razon puntaje/costo");
+
+    free(seleccionados);
+    free_deportistas_array(deportistas, count);
+}
+
 int main(int argc, char **argv)
 {
     int opt;
@@ -107,7 +195,7 @@ int main(int argc, char **argv)
         return EXIT_SUCCESS;
     }
 
-    while((opt = getopt(argc, argv, "hg:i:r:t:m:")) != -1) {
+    while((opt = getopt(argc, argv, "hg:i:r:t:m:p:c:z:")) != -1) {
         switch(opt) {
             case 'h':
                 print_help(argv[0]);
@@ -170,6 +258,45 @@ int main(int argc, char **argv)
                 }
 
                 select_team_pd_memoization(presupuesto);
+                break;
+            }
+
+            case 'p':
+            {
+                int presupuesto = atoi(optarg);
+
+                if (presupuesto <= 0) {
+                    print_error(ERROR_INVALID_DATA_AMOUNT, "El presupuesto debe ser mayor a 0");
+                    return EXIT_FAILURE;
+                }
+
+                select_team_greedy_puntaje(presupuesto);
+                break;
+            }
+
+            case 'c':
+            {
+                int presupuesto = atoi(optarg);
+
+                if (presupuesto <= 0) {
+                    print_error(ERROR_INVALID_DATA_AMOUNT, "El presupuesto debe ser mayor a 0");
+                    return EXIT_FAILURE;
+                }
+
+                select_team_greedy_costo(presupuesto);
+                break;
+            }
+
+            case 'z':
+            {
+                int presupuesto = atoi(optarg);
+
+                if (presupuesto <= 0) {
+                    print_error(ERROR_INVALID_DATA_AMOUNT, "El presupuesto debe ser mayor a 0");
+                    return EXIT_FAILURE;
+                }
+
+                select_team_greedy_razon(presupuesto);
                 break;
             }
 

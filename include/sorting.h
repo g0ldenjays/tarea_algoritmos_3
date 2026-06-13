@@ -18,7 +18,9 @@ typedef enum {
     SORT_BY_PUNTAJE = 2,
     SORT_BY_COMPETENCIAS = 3,
     SORT_BY_NOMBRE = 4,
-    SORT_BY_EQUIPO = 5
+    SORT_BY_EQUIPO = 5,
+    SORT_BY_COSTO = 6,
+    SORT_BY_RATIO = 7
 } SortCriteria;
 
 /**
