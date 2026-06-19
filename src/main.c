@@ -6,6 +6,7 @@
 #include "base.h"
 #include "pd.h"
 #include "greedy.h"
+#include "experiment.h"
 
 static void print_help(const char *programName)
 {
@@ -19,6 +20,8 @@ static void print_help(const char *programName)
     printf("  %s -p <presupuesto>   Ejecuta seleccion greedy (mayor puntaje primero)\n", programName);
     printf("  %s -c <presupuesto>   Ejecuta seleccion greedy (menor costo primero)\n", programName);
     printf("  %s -z <presupuesto>   Ejecuta seleccion greedy (mejor razon puntaje/costo)\n", programName);
+    printf("  %s -u <cantidad>      Ejecuta seleccion greedy sin presupuesto tomando k mejores puntajes\n", programName);
+    printf("  %s -x                 Ejecuta experimentos y genera db/experiment_results.csv\n", programName);
 }
 
 static void search_by_id(int targetId)
@@ -184,6 +187,44 @@ static void select_team_greedy_razon(int presupuesto)
     free_deportistas_array(deportistas, count);
 }
 
+static void select_team_greedy_sin_presupuesto(int k)
+{
+    int count = 0;
+    Deportista *deportistas = load_deportistas_array(&count);
+
+    if (deportistas == NULL || count == 0) {
+        print_error(ERROR_NO_DATA_LOADED, CSV_ROUTE);
+        return;
+    }
+
+    if (k <= 0) {
+        print_error(ERROR_INVALID_DATA_AMOUNT, "La cantidad k debe ser mayor a 0");
+        free_deportistas_array(deportistas, count);
+        return;
+    }
+
+    if (k > count) {
+        k = count;
+    }
+
+    Deportista *seleccionados = malloc(sizeof(Deportista) * k);
+    int costo_total = 0;
+    float puntaje_total = 0.0f;
+
+    if (seleccionados == NULL) {
+        print_error(ERROR_MEMORY_ALLOCATION_FAILED, NULL);
+        free_deportistas_array(deportistas, count);
+        return;
+    }
+
+    int n = greedy_sin_presupuesto(deportistas, count, k, seleccionados, &costo_total, &puntaje_total);
+
+    print_resultado_greedy(seleccionados, n, costo_total, puntaje_total, "sin presupuesto, mayor puntaje primero");
+
+    free(seleccionados);
+    free_deportistas_array(deportistas, count);
+}
+
 int main(int argc, char **argv)
 {
     int opt;
@@ -195,7 +236,7 @@ int main(int argc, char **argv)
         return EXIT_SUCCESS;
     }
 
-    while((opt = getopt(argc, argv, "hg:i:r:t:m:p:c:z:")) != -1) {
+    while((opt = getopt(argc, argv, "hxg:i:r:t:m:p:c:z:u:")) != -1) {
         switch(opt) {
             case 'h':
                 print_help(argv[0]);
@@ -299,6 +340,22 @@ int main(int argc, char **argv)
                 select_team_greedy_razon(presupuesto);
                 break;
             }
+            case 'u':
+            {
+                int k = atoi(optarg);
+
+                if (k <= 0) {
+                    print_error(ERROR_INVALID_DATA_AMOUNT, "La cantidad k debe ser mayor a 0");
+                    return EXIT_FAILURE;
+                }
+
+                select_team_greedy_sin_presupuesto(k);
+                break;
+            }
+
+            case 'x':
+                run_experiments();
+                break;
 
             case '?':
             default:

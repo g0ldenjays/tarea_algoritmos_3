@@ -75,6 +75,39 @@ int greedy_por_razon(Deportista *deportistas, int cantidad, int presupuesto, Dep
     return greedy_generico(deportistas, cantidad, presupuesto, SORT_BY_RATIO, DESCENDING, seleccionados, costo_total, puntaje_total);
 }
 
+int greedy_sin_presupuesto(Deportista *deportistas, int cantidad, int k, Deportista *seleccionados, int *costo_total, float *puntaje_total)
+{
+    *costo_total = 0;
+    *puntaje_total = 0.0f;
+
+    if (deportistas == NULL || seleccionados == NULL || cantidad <= 0 || k <= 0) {
+        return 0;
+    }
+
+    if (k > cantidad) {
+        k = cantidad;
+    }
+
+    Deportista *copia = malloc(sizeof(Deportista) * cantidad);
+
+    if (copia == NULL) {
+        return 0;
+    }
+
+    memcpy(copia, deportistas, sizeof(Deportista) * cantidad);
+
+    quick_sort_deportistas(copia, cantidad, SORT_BY_PUNTAJE, DESCENDING, PIVOT_LAST);
+
+    for (int i = 0; i < k; i++) {
+        seleccionados[i] = copia[i];
+        *costo_total += copia[i]->costo;
+        *puntaje_total += copia[i]->puntaje;
+    }
+
+    free(copia);
+    return k;
+}
+
 void print_resultado_greedy(Deportista *seleccionados, int cantidad, int costo_total, float puntaje_total, const char *nombre_estrategia)
 {
     printf("Equipo seleccionado por estrategia greedy (%s):\n", nombre_estrategia);

@@ -50,4 +50,19 @@ int greedy_por_razon(Deportista *deportistas, int cantidad, int presupuesto, Dep
  */
 void print_resultado_greedy(Deportista *seleccionados, int cantidad, int costo_total, float puntaje_total, const char *nombre_estrategia);
 
+/**
+ * @brief Estrategia greedy sin restriccion de presupuesto.
+ *
+ * Ordena los deportistas por puntaje descendente y selecciona exactamente k.
+ *
+ * @param deportistas Arreglo de deportistas disponibles.
+ * @param cantidad Cantidad total de deportistas.
+ * @param k Cantidad exacta de deportistas a seleccionar.
+ * @param seleccionados Arreglo de salida, ya alocado por el llamador.
+ * @param costo_total Variable de salida con el costo total de los seleccionados.
+ * @param puntaje_total Variable de salida con el puntaje total.
+ * @return int Cantidad seleccionada, normalmente k si hay suficientes datos.
+ */
+int greedy_sin_presupuesto(Deportista *deportistas, int cantidad, int k, Deportista *seleccionados, int *costo_total, float *puntaje_total);
+
 #endif
